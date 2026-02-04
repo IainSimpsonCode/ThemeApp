@@ -37,20 +37,19 @@ def init_state(df_len):
 
 def build_output_csv(df):
     coded = []
-    for i, row in df.iterrows():
+    for i in range(len(df)):
         codes = ";".join(st.session_state.codes.get(i, []))
-        output_row = {"codes": codes}
-        # Add all columns from the original data
-        for col_idx in range(len(df.columns)):
-            output_row[f"column_{col_idx + 1}"] = row[col_idx]
-        coded.append(output_row)
+        coded.append({
+            "row": i + 1,
+            "codes": codes
+        })
     out_df = pd.DataFrame(coded)
     return out_df.to_csv(index=False)
 
 
 # ---------- UI ----------
 
-st.title("ThemeApp - Thematic Analysis Coding Tool V1.3.0")
+st.title("ThemeApp - Thematic Analysis Coding Tool V1.4.0")
 
 data_file = st.file_uploader("Upload CSV or Excel file (one paragraph per row)", type=["csv", "xlsx"])
 codebook_file = st.file_uploader("Upload codebook.txt", type=["txt"])
