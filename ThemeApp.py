@@ -39,17 +39,18 @@ def build_output_csv(df):
     coded = []
     for i, row in df.iterrows():
         codes = ";".join(st.session_state.codes.get(i, []))
-        coded.append({
-            "paragraph": row[0],
-            "codes": codes
-        })
+        output_row = {"codes": codes}
+        # Add all columns from the original data
+        for col_idx in range(len(df.columns)):
+            output_row[f"column_{col_idx + 1}"] = row[col_idx]
+        coded.append(output_row)
     out_df = pd.DataFrame(coded)
     return out_df.to_csv(index=False)
 
 
 # ---------- UI ----------
 
-st.title("ThemeApp - Thematic Analysis Coding Tool V1.2.1")
+st.title("ThemeApp - Thematic Analysis Coding Tool V1.3.0")
 
 data_file = st.file_uploader("Upload CSV or Excel file (one paragraph per row)", type=["csv", "xlsx"])
 codebook_file = st.file_uploader("Upload codebook.txt", type=["txt"])
@@ -80,7 +81,9 @@ if data_file is not None and codebook_file is not None:
 
     with col1:
         st.subheader(f"Paragraph {i + 1} of {len(df)}")
-        st.write(df.iloc[i, 0])
+        # Display all columns for this row
+        for col_idx in range(len(df.columns)):
+            st.write(df.iloc[i, col_idx])
 
     with col2:
         st.subheader("Codes")
