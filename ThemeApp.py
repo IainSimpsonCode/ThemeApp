@@ -31,6 +31,8 @@ def init_state(df_len):
         st.session_state.index = 0
     if "codes" not in st.session_state:
         st.session_state.codes = {i: [] for i in range(df_len)}
+    if "new_codes" not in st.session_state:
+        st.session_state.new_codes = {}
 
 
 def build_output_csv(df):
@@ -81,12 +83,42 @@ if csv_file is not None and codebook_file is not None:
         selected = set(st.session_state.codes.get(i, []))
         for group, codes in codebook.items():
             with st.expander(group, expanded=False):
+                # Display codebook codes
                 for code in codes:
                     checked = code in selected
                     if st.checkbox(code, value=checked, key=f"{i}_{group}_{code}"):
                         selected.add(code)
                     else:
                         selected.discard(code)
+                
+                # Display newly added codes for this group
+                new_codes_key = f"{group}_new"
+                if new_codes_key not in st.session_state.new_codes:
+                    st.session_state.new_codes[new_codes_key] = []
+                
+                for new_code in st.session_state.new_codes[new_codes_key]:
+                    checked = new_code in selected
+                    if st.checkbox(new_code, value=checked, key=f"{i}_{group}_{new_code}_new"):
+                        selected.add(new_code)
+                    else:
+                        selected.discard(new_code)
+                
+                # Add new code input
+                st.divider()
+                col_input, col_btn = st.columns([3, 1])
+                with col_input:
+                    new_code = st.text_input(
+                        "Add new code",
+                        placeholder="Type code name...",
+                        key=f"{i}_{group}_new_code_input"
+                    )
+                with col_btn:
+                    if st.button("Add", key=f"{i}_{group}_add_btn"):
+                        if new_code and new_code not in st.session_state.new_codes[new_codes_key]:
+                            st.session_state.new_codes[new_codes_key].append(new_code)
+                            selected.add(new_code)
+                            st.rerun()
+        
         st.session_state.codes[i] = sorted(selected)
 
     nav_col1, nav_col2, nav_col3 = st.columns([1, 1, 2])
