@@ -49,13 +49,17 @@ def build_output_csv(df):
 
 # ---------- UI ----------
 
-st.title("Thematic Analysis Coding Tool")
+st.title("Thematic Analysis Coding Tool V1.2")
 
-csv_file = st.file_uploader("Upload CSV file (one paragraph per row)", type=["csv"])
+data_file = st.file_uploader("Upload CSV or Excel file (one paragraph per row)", type=["csv", "xlsx"])
 codebook_file = st.file_uploader("Upload codebook.txt", type=["txt"])
 
-if csv_file is not None and codebook_file is not None:
-    df = pd.read_csv(csv_file, header=None)
+if data_file is not None and codebook_file is not None:
+    # Read file based on type
+    if data_file.name.endswith('.xlsx'):
+        df = pd.read_excel(data_file, header=None)
+    else:
+        df = pd.read_csv(data_file, header=None)
     # Use a cross-platform temporary directory
 
     if "codebook_text" not in st.session_state:
