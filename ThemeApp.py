@@ -49,7 +49,7 @@ def build_output_csv(df):
 
 # ---------- UI ----------
 
-st.title("Thematic Analysis Coding Tool V1.2")
+st.title("Thematic Analysis Coding Tool V1.2.1")
 
 data_file = st.file_uploader("Upload CSV or Excel file (one paragraph per row)", type=["csv", "xlsx"])
 codebook_file = st.file_uploader("Upload codebook.txt", type=["txt"])
