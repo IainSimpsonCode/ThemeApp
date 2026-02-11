@@ -49,7 +49,7 @@ def build_output_csv(df):
 
 # ---------- UI ----------
 
-st.title("ThemeApp - Thematic Analysis Coding Tool V1.4.0")
+st.title("ThemeApp - Thematic Analysis Coding Tool V1.5.0")
 
 data_file = st.file_uploader("Upload CSV or Excel file (one paragraph per row)", type=["csv", "xlsx"])
 codebook_file = st.file_uploader("Upload codebook.txt", type=["txt"])
@@ -127,19 +127,22 @@ if data_file is not None and codebook_file is not None:
         
         st.session_state.codes[i] = sorted(selected)
 
-    nav_col1, nav_col2, nav_col3 = st.columns([1, 1, 2])
+    nav_col1, nav_col2 = st.columns([1.5, 2])
 
     with nav_col1:
-        if st.button("Back") and i > 0:
-            st.session_state.index -= 1
+        goto_row = st.number_input(
+            "Go to row",
+            min_value=1,
+            max_value=len(df),
+            value=i + 1,
+            step=1,
+            key="goto_row_input"
+        )
+        if goto_row != i + 1:
+            st.session_state.index = int(goto_row) - 1
             st.rerun()
 
     with nav_col2:
-        if st.button("Next") and i < len(df) - 1:
-            st.session_state.index += 1
-            st.rerun()
-
-    with nav_col3:
         if st.button("Prepare coded CSV"):
             csv_data = build_output_csv(df)
             st.download_button(
